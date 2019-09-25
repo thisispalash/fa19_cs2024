@@ -5,27 +5,33 @@
  *
  */
 
-// To run: $ clang -lstdc++ -o ass04 ass04.cpp menu.cpp bank.cpp
+/* To run: 
+ $ clang -lstdc++ -o ass04 Menu.cpp BankAccount.cpp main.cpp
+ $ ./ass04
+ */
 
 
 #include <iostream>
-#include "menu.cpp"
-#include "bank.cpp"
+#include "MenuH.h"
+#include "BankAccountH.h"
 
 using namespace std;
 
+// Set a balance
 int setBalance(Bank* b) {
   cout << "Enter new balance: ";
   int x; cin >> x;
   return b->setBalance(x);
 }
 
+// Deposit some money in the account
 int deposit(Bank* b) {
   cout << "Deposit amount: ";
   int x; cin >> x;
   return b->deposit(x);
 }
 
+// Dolla Dolla Bills YO
 int withdraw(Bank* b) {
   cout << "Withdrawal amount: ";
   int x; cin >> x;
@@ -36,6 +42,7 @@ int withdraw(Bank* b) {
   return b->getBalance();
 }
 
+// Entry point of the program
 int main(int argc, char* argv[]) {
   int bal; Menu m; Bank b = Bank();
   while(1) {
