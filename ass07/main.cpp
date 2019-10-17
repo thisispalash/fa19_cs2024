@@ -17,7 +17,8 @@
 
 /* Overloaded operators */
 
-ostream& operator<< (ostream &os, Item &i) { 
+ostream& operator<< (ostream &os, Item &i) {
+  os << " ";
   os << i.x;
   os << ". ";
   os << i.title;
@@ -25,11 +26,11 @@ ostream& operator<< (ostream &os, Item &i) {
   return os;
 }
 
-ostream& operator<< (ostream &os, Menu const &m) {
-  os << "----- Menu -----\n";
+ostream& operator<< (ostream &os, Menu &m) {
+  os << "\n----- Menu -----\n";
   for(int i=0; i<m.items.size(); i++)
     os << m.items[i];
-  os << "----- ---- -----\n";
+  os << "----------------\n";
   return os;
 }
 
@@ -50,13 +51,15 @@ void square() {
 
 int main(int argc, char* argv[]) {
   Item items[] = {
-    Item("Print Name",'1'),
-    Item("Square num",'2'),
-    Item("Quit  asap",'3')
+    Item("Print  Name",'1'),
+    Item("Square  num",'2'),
+    Item("Quit   asap",'3')
   }; // Menu Items
-  Menu menu(items,sizeof(items)/sizeof(items[0])); char x;
+  Menu menu(items,sizeof(items)/sizeof(items[0]));
+    // `sizeof(arr)/sizeof(arr[0])` divides total size by size of one element.
+  char x;
   do {
-    cout << menu;
+    cout << menu << endl;
     x = menu.promptUser();
     switch(x) {
       case '1': printName(); 

@@ -13,4 +13,3 @@ Item::Item(string title, char x) {
 }
 
 char Item::getPrompt() { return this->x; }
-

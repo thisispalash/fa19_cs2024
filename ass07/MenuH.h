@@ -13,5 +13,5 @@ class Menu {
   public:
     Menu(Item[], int);
     char promptUser();
-  friend ostream& operator<< (ostream& os, Menu const &m);
+  friend ostream& operator<< (ostream& os, Menu &m);
 };
