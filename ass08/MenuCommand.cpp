@@ -1,36 +1,30 @@
 /*  
  *  CS 2024 ass08
  *  Author: Palash A. [pa334]
- *  Date: October 29, 2019
+ *  Date: October 30, 2019
  *
  */
 
 #include "MenuCommandH.h"
 
-/* Overloaded Operators */
-
-ostream& operator<< (ostream &os, Item &i) {
-  os << " ";
-  os << i.x;
-  os << ". ";
-  os << i.title;
-  os << "\n";
-  return os;
-}
-
-/* Abstract Base Class `Item` */
-
-bool Item::select() {
-
-}
-
-void Item::display() {
-
-}
-
-/* Derived Class `Command` */
-
-Command::Item(std::string title, char x) {
-  this->title = title;
+Item::Item(std::string t, char x) {
+  this->title = t;
   this->x = x;
+}
+
+bool Command::select() {
+  if(this->x == 'q' || this->x == 'b')
+    return 0;
+  std::cout << this->title << " selected\n";
+  std::cout << "---------------\n";
+  return 1;
+}
+
+void Command::display() {
+  std::cout << this->x << ". " << this->title << std::endl;
+}
+
+Command::Command(std::string title, char x) : Item(title, x) {
+  // this->title = title;
+  // this->x = x;
 }

@@ -1,17 +1,18 @@
 /*  
  *  CS 2024 ass08
  *  Author: Palash A. [pa334]
- *  Date: October 29, 2019
+ *  Date: October 30, 2019
  *
  */
 
-#include "MenuItemH.h"
+#ifndef MENUITEM_H
+#define MENUITEM_H
+  #include "MenuItemH.h"
+#endif
 
 class Command: public Item {
-  private:
-    std::string title;
-    char x;
-  friend ostream& operator<< (ostream& os, Item &i);
-  public:
-    Item(std::string,char);
+  public: 
+    Command(std::string, char);
+    bool select();
+    void display();
 };
