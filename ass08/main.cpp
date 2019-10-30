@@ -14,7 +14,7 @@
 #include "MenuCommandH.h"
 
 int main(int argc, char* argv[]) {
-  Item *acc[] = { // Sub menu for account actions
+  Item *acc[] = {
     new Command("balance inquiry",'1'),
     new Command("deposit funds",'2'),
     new Command("withdraw $$$$",'3'),
@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
     new Menu(acc, 4,"account menu",'3'),
     new Command("quit",'q')
   };
-  Menu top_menu(top, 4, "main menu", 'm'); // the character should not matter as this is not to be displayed as an option anywhere
-  top_menu.select(); // The last false returned on quitting does not matter
+  Menu top_menu(top, 4, "main menu", 'm'); // Prompt for top level menu not selected explicitly
+  top_menu.select(); // Currently, no use of the boolean returned by top level select
   std::cout << "bye\n";
   return 0;
 }
