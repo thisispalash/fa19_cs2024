@@ -1,7 +1,7 @@
 /*  
  *  CS 2024 ass09
  *  Author: Palash A. [pa334]
- *  Date: Nov 2, 2019
+ *  Date: Nov 9, 2019
  *
  */
 
@@ -12,16 +12,17 @@ Item::Item(std::string t, char x) {
   this->x = x;
 } // I wonder if this can be moved to MenuItemH
 
-Command::Command(std::string title, char x) : Item(title, x) {
-  this->ptr = this->execute;
+Command::Command(std::string title, char x, 
+  const std::function<bool()> &ptr) : Item(title,x) {
+    this->fun_ptr = ptr;
 }
 
 bool Command::select() {
-  if(this->x == 'q' || this->x == 'b')
-    return 0; // stop displaying current menu
-  if(this->ptr != '\0')
-    return this->ptr();
-  return 1; // continue displaying the current menu if all fail
+  if(this->fun_ptr == NULL) {
+    std::cout << "unimplemented\n";
+    return 1;
+  }
+  return this->fun_ptr();
 }
 
 void Command::display() {
