@@ -9,13 +9,13 @@
 
 Bank::Bank() {
   if(this->acc.empty()) this->curr = NULL;
-  else this->curr = this->acc.begin()->second;
+  else this->curr = this->acc.begin()->second; // Select the first account
 }
 
 Bank::~Bank() {
   this->acc.clear();
   delete this->curr;
-}
+} // free up memory
 
 void Bank::newAcc() {
   std::cout << "Enter Account Name: ";
@@ -25,7 +25,7 @@ void Bank::newAcc() {
     std::cout << "Enter Account Number: ";
     std::cin >> num;
     if(this->acc.count(num) != 0) std::cout << "Account Number exists; try again\n";
-    else break;
+    else break; // break only on unique number
   } while(1);
   std::cout << "Enter Opening Balance: ";
   int bal; std::cin >> bal;
@@ -38,7 +38,7 @@ void Bank::lstAcc() {
   std::cout << "Number of accounts: " << size << std::endl;
   if(size==0) { return; }
   std::cout << "AccNum\t:\tName\t:\tBalance" << std::endl;
-  std::map<int,Account*>::iterator itr;
+  std::map<int,Account*>::iterator itr; // Iterator for map of accounts
   for(itr=this->acc.begin(); itr!=this->acc.end(); ++itr ) {
     std::cout << itr->first;
     std::cout << "\t:\t";
@@ -53,7 +53,7 @@ void Bank::accDet(Account* acc) {
   if(acc == NULL) {
     std::cout << "No account selected" << std::endl;
     return;
-  }
+  } // check for selected account
   std::cout << "Selected Account Details:" << std::endl;
   std::cout << "Account Number:\t" << acc->getAccountNumber() << std::endl;
   std::cout << "Account Name:\t" << acc->getName() << std::endl;
@@ -63,5 +63,5 @@ void Bank::accDet(Account* acc) {
 Account* Bank::setCurrent(int num) {
   if(this->acc.count(num)!=0) this->curr = this->acc.find(num)->second;
   else std::cout << "Account number not found. Please try again." << std::endl;
-  return this->curr; 
+  return this->curr; // returns previous if key not found
 }

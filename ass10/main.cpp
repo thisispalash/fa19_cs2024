@@ -10,9 +10,9 @@
  $ ./ass10
  */
 
+#include "MenuCommandH.h"
 #include "MenuH.h"
 #include "BankH.h"
-#include "MenuCommandH.h"
 
 int main(int argc, char* argv[]) {
   /* common lambdas */
@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     return amt;
   };
   Bank b;
-  Item *acc[] = {
+  Item *acc[] = { // Sub menu
     new Command("balance inquiry",'1',[&]() { 
       std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance());
       std::cout << std::endl;
@@ -39,20 +39,20 @@ int main(int argc, char* argv[]) {
       return 1; }),
     new Command("go back",'b',exit)
   };
-  Item *top[] = {
+  Item *top[] = { // Main menu
     new Command("list accounts",'1',[&]() { b.lstAcc(); return 1; }),
     new Command("new account",'2',[&]() { b.newAcc(); return 1; }),
     new Command("select account",'3',[&]() {
       b.lstAcc(); std::cout<<"enter account num: ";
       int num; std::cin>>num;
-      b.accDet(b.setCurrent(num));
+      b.accDet(b.setCurrent(num)); // Display the details of the selected account
       return 1; }),
     new Command("current account",'4',[&]() { b.accDet(b.getCurrent()); return 1; }),
-    new Menu(acc, 4,"account menu",'5'),
+    new Menu(acc, sizeof(acc)/sizeof(acc[0]),"account menu",'5'),
     new Command("quit",'q',exit)
   };
-  Menu top_menu(top, 6, "main menu", 'm'); // Prompt for top level menu not selected explicitly
-  top_menu.select(); // Currently, no use of the boolean returned by top level select
+  Menu top_menu(top, sizeof(top)/sizeof(top[0]), "main menu", 'm');
+  top_menu.select(); // No use of the bool returned
   std::cout << "bye\n";
   return 0;
 }
