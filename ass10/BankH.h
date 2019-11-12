@@ -1,19 +1,22 @@
 /*  
- *  CS 2024 ass05
+ *  CS 2024 ass10
  *  Author: Palash A. [pa334]
- *  Date: Oct 1, 2019
+ *  Date: Nov 11, 2019
  *
  */
  
 #include "BankAccountH.h"
-#include <iostream>
-#include <vector> // "error: implicit instantiation of undefined template" without this ?!
-using namespace std;
+#include <iterator>
+#include <map>
 
 class Bank {
-  private: vector<BankAccount*> acc;
+  private: std::map<int, Account*> acc; Account *curr;
   public:
+    Bank();
+    ~Bank();
     void newAcc();
     void lstAcc();
-    void clear();
+    void accDet(Account*);
+    Account *getCurrent() { return curr; }
+    Account *setCurrent(int);
 };
