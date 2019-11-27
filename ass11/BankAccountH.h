@@ -1,26 +1,28 @@
 /*  
  *  CS 2024 ass05
  *  Author: Palash A. [pa334]
- *  Date: Nov 10, 2019
+ *  Date: Nov 25, 2019
  *
  */
 
 #include <iostream>
+#include <string>
+using namespace std;
 
 class Account {
   private: 
     int accnum, balance;
-    std::string name;
+    string name;
   public:
     Account();
-    Account(int,int,std::string);
+    Account(int,int,string);
 
     int getBalance();
     int setBalance(int);
     int getAccountNumber();
     int setAccountNumber(int);
-    std::string getName();
-    std::string setName(std::string);
+    string getName();
+    string setName(string);
 
     int deposit(int);
     int withdraw(int);

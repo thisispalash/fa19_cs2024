@@ -1,7 +1,7 @@
 /*  
  *  CS 2024 ass09
  *  Author: Palash A. [pa334]
- *  Date: Nov 24, 2019
+ *  Date: Nov 26, 2019
  *
  */
 
@@ -37,6 +37,16 @@ int main(int argc, char* argv[]) {
       std::cout << ((res!=-1)? "Account Balance: "+std::to_string(res) : "insufficient funds");
       std::cout << std::endl;
       return 1; }),
+    new Command("transfer $$$",'4',[&]() {
+      cout << "Account number to transfer to: ";
+      int to; cin >> to;
+      Account* To = b.getAcc(to);
+      cout << "Amount to transfer: ";
+      int amt; cin >> amt;
+      struct Txn txn = b.transaction_do(b.getCurrent(),To,amt);
+      cout << "Txn Number: " << txn.N << endl;
+      return 1;
+    }),
     new Command("go back",'b',exit)
   };
   Item *top[] = { // Main menu

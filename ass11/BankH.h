@@ -1,31 +1,43 @@
 /*  
  *  CS 2024 ass10
  *  Author: Palash A. [pa334]
- *  Date: Nov 24, 2019
+ *  Date: Nov 26, 2019
  *
  */
  
+
+// Add header guards
+
 #include "BankAccountH.h"
+#include <map>
 #include <iterator>
 #include <fstream>
-#include <map>
-using namespace std;
+  
+struct Txn {
+  int N, Amt=0;
+  Account* From = NULL;
+  Account* To = NULL;
+};
 
 class Bank {
   private:
-    Account *curr;
-    map<int, Account*> acc;
-    fstream data('data.dat', ios::in | ios::out);
-    fstream txn('transactions.dat', ios::in | ios::out);
+    int _txn_num;
+    Account *_curr;
+    map<int, Account*> _acc;
+    fstream _data, _txn;
   public:
     Bank();
     ~Bank();
-    
+
     void newAcc();
     void lstAcc();
     void accDet(Account*);
-    Account* getCurrent() { return curr; }
+    Account* getCurrent() { return _curr; }
     Account* setCurrent(int);
+    Txn transaction_do(Account*,Account*,int);
     
-    void transaction();
+    Account* getAcc(int);
+    Account* writeAcc(Account*);
+    struct Txn readTxn(int);
+    struct Txn writeTxn(struct Txn);
 };
