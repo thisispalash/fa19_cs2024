@@ -1,7 +1,7 @@
 /*  
  *  CS 2024 ass11
  *  Author: Palash A. [pa334]
- *  Date: Nov 26, 2019
+ *  Date: Nov 28, 2019
  *
  */
 
@@ -12,9 +12,10 @@
  */
 
 Bank::Bank() {
-  this->_data.open("acc.dat",ios::in|ios::out);
+  this->_data.open("_acc.dat",ios::in|ios::out|ios::app);
   // Load the map of accounts from file
   if(this->_data) { 
+    this->_data.seekp(0);
     string str, delim = ",";
     while(getline(this->_data,str)) {
       if(str.find(delim) == string::npos) break;
@@ -28,15 +29,17 @@ Bank::Bank() {
       int bal = stof(str.substr(0,pos)); // TODO Make float
       this->_acc[num] = new Account(bal,num,name); // add to runtime map
     }
-  }
-  this->_txn.open("txn.dat",ios::in|ios::out);
+  } _data.close();
+  this->_txn.open("_txn.dat",ios::in|ios::out|ios::app);
   // Get last transaction number
   if(this->_txn) {
+    this->_txn.seekp(0); // Make efficient by going to last line only
     string str; while(getline(this->_txn,str)); // Jump to last line
     int pos = str.find(":");
     string num_str = (pos!=string::npos)? str.substr(0,pos):"0";
     this->_txn_num = stoi(num_str);
-  }
+    cout << "Transactions done: " << this->_txn_num << endl;
+  } _txn.close();
   this->_curr = NULL;
 }
 
@@ -130,6 +133,7 @@ Account* Bank::getAcc(int num) {
 }
 
 Account* Bank::writeAcc (Account* acc) {
+  this->_data.open("_acc.dat",ios::in|ios::out);
   this->_data.seekg(0); 
   int num = acc->getAccountNumber(), pos = 0;
   string str; while(getline(this->_data,str)) {
@@ -141,13 +145,15 @@ Account* Bank::writeAcc (Account* acc) {
       // 3. Write new balance
       str.erase(0,pos+1); // remove accnum
       str.erase(0,acc->getName().length()+1); // remove name
-      int offset = int(this->_data.tellg()) - str.length();
+      int offset = int(this->_data.tellg()) - str.length() - 1;
       this->_data.seekp(offset);
       this->_data << acc->getBalance() << endl;
+      this->_data.close();
       return acc;
     }
-  }
+  } this->_data.close();
   // Account was not found and we have reached EOF
+  this->_data.open("_acc.dat",ios::app); // TODO why close and reopen
   if(this->_data) {
     this->_data << acc->getAccountNumber();
     this->_data << ",";
@@ -155,7 +161,8 @@ Account* Bank::writeAcc (Account* acc) {
     this->_data << ",";
     this->_data << acc->getBalance();
     this->_data << endl;
-  } else cout << "Not write\n";
+  } else cout << "Not write to file :(\n";
+  this->_data.close();
   return acc;
 }
 
@@ -182,8 +189,8 @@ struct Txn Bank::readTxn (int num) {
 }
 
 struct Txn Bank::writeTxn (struct Txn txn) {
+  this->_txn.open("_txn.dat",ios::app);
   if(this->_txn) {
-    this->_txn.seekp(EOF);
     this->_txn << txn.N;
     this->_txn << ": ";
     this->_txn << txn.From->getAccountNumber();
@@ -193,5 +200,6 @@ struct Txn Bank::writeTxn (struct Txn txn) {
     this->_txn << txn.Amt;
     this->_txn << endl;
   } else cout << "Not write\n";
+  this->_txn.close();
   return txn;
 }

@@ -1,13 +1,13 @@
 /*  
- *  CS 2024 ass09
+ *  CS 2024 ass11
  *  Author: Palash A. [pa334]
- *  Date: Nov 26, 2019
+ *  Date: Nov 28, 2019
  *
  */
 
 /* To run
- $ clang -lstdc++ -std=c++11 -o ass11 MenuCommand.cpp Menu.cpp BankAccount.cpp Bank.cpp main.cpp
- $ ./ass11
+ $ clang -lstdc++ -std=c++11 -o ass11.out MenuCommand.cpp Menu.cpp BankAccount.cpp Bank.cpp main.cpp
+ $ ./ass11.out
  */
 
 #include "MenuCommandH.h"
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
       std::cout << "Account Balance: " << std::to_string(b.getCurrent()->deposit(getAmt(1))); 
       std::cout << std::endl;
       return 1; }),
-    new Command("withdraw $$$$",'3',[&]() {
+    new Command("withdraw $$$",'3',[&]() {
       int res = b.getCurrent()->withdraw(getAmt(0));
       std::cout << ((res!=-1)? "Account Balance: "+std::to_string(res) : "insufficient funds");
       std::cout << std::endl;
