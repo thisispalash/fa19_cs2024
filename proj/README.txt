@@ -1,1 +1,0 @@
-Expand on ass12, and create BIP32 secure accounts. Money is replaced with website data. Transactions allow for signing and publishing zerosites.
