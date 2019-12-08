@@ -46,6 +46,9 @@ class Bank {
     
     Txn transaction_do(AccountPtr,AccountPtr,int);
 
+    std::string padAccNum(int,int len = 10);
+    std::string padName(std::string,int len = 20);
+    std::string padBalance(int,int len = 7); // Max. money in an account just shy of 10 mil
     AccountPtr writeAcc(AccountPtr,bool isNew = false);
     struct Txn writeTxn(struct Txn);
 };

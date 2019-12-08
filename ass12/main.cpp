@@ -31,14 +31,14 @@ int main(int argc, char* argv[]) {
       std::cout << std::endl;
       return 1; }),
     new Command("deposit funds",'2',[&]() { 
-      std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance());
+      std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance()) << "$";
       int new_bal = b.getCurrent()->deposit(getDepAmt(true));
-      std::cout << "Updated Balance: " << std::to_string(new_bal) << std::endl;
+      std::cout << "Updated Balance: " << std::to_string(new_bal) << "$" << std::endl;
       return 1; }),
     new Command("withdraw $$$",'3',[&]() {
-      std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance());
+      std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance()) << "$";
       int res = b.getCurrent()->withdraw(getDepAmt(false));
-      std::cout << ((res!=-1)? "Updated Balance: "+std::to_string(res) : "insufficient funds");
+      std::cout << ((res!=-1)? "Updated Balance: "+std::to_string(res)+"$" : "insufficient funds");
       std::cout << std::endl; return 1; }),
     new Command("transfer $$$",'4',[&]() {
       b.lstAcc(); std::cout << "Account number to transfer to: ";
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
       std::cout << "Amount to transfer: ";
       int amt; std::cin >> amt;
       struct Txn txn = b.transaction_do(b.getCurrent(),b.getAcc(to),amt);
-      std::cout << "Updated Balance: " << std::to_string(b.getCurrent()->getBalance()); 
+      std::cout << "Updated Balance: " << std::to_string(b.getCurrent()->getBalance()) << "$"; 
       return 1;
     }),
     new Command("go back",'b',exit)

@@ -80,10 +80,6 @@ void Bank::lstAcc() {
     else std::cout << "XXX"; // Privacy
     std::cout << std::endl;
   });
-
-
-  for(itr=_acc.begin(); itr!=_acc.end(); ++itr ) {
-  }
 }
 
 void Bank::accDet() {
@@ -100,6 +96,11 @@ void Bank::accDet() {
 void Bank::setCurrent(int num) {
   if(_acc.count(num)>0) _curr = _acc.find(num)->second;
   else std::cout << "Account number not found. Please try again. Current account not changed.\n";
+}
+
+AccountPtr Bank::getAcc(int num) {
+  if (_acc.count(num)>0) return _acc.find(num)->second;
+  return nullptr;
 }
 
 struct Txn Bank::transaction_do(AccountPtr from, AccountPtr to, int amt) {
@@ -119,29 +120,43 @@ struct Txn Bank::transaction_do(AccountPtr from, AccountPtr to, int amt) {
   return txn;
 }
 
-AccountPtr Bank::getAcc(int num) {
-  if (_acc.count(num)>0) return _acc.find(num)->second;
-  return nullptr;
-}
-
 
 /* 
  * File Ops
  */
 
+
+std::string Bank::padAccNum(int num, int len) {
+  std::string ret = "";
+  for(int i=len; i>std::to_string(num).length(); i--) ret += "0";
+  ret += std::to_string(num);
+  return ret;
+}
+std::string Bank::padName(std::string name, int len) {
+  std::string ret = name;
+  for(int i=name.length(); i<len; i++) ret += " ";
+  return ret;
+}
+std::string Bank::padBalance(int bal, int len) {
+  std::string ret = "";
+  for(int i=len; i>std::to_string(bal).length(); i--) ret += " ";
+  ret += std::to_string(bal);
+  return ret;
+}
+
 AccountPtr Bank::writeAcc (AccountPtr acc, bool isNew) {
   if (isNew) {
      _data.open(_data_file,std::ios::app);
     if(_data) {
-      _data << acc->getAccountNumber();
+      _data << padAccNum(acc->getAccountNumber());
       _data << ",";
-      _data << acc->getName();
+      _data << padName(acc->getName());
       _data << ",";
-      _data << acc->getBalance();
+      _data << padBalance(acc->getBalance());
       _data << std::endl;
     } else std::cout << "Could not add account to file. Please exit and try again.\n";
     _data.close();
-  } else { // Error: variable lengths causing random newlines
+  } else {
     int num = acc->getAccountNumber(), pos = 0;
     _data.open(_data_file,std::ios::in|std::ios::out);
     if(_data) {
@@ -153,10 +168,10 @@ AccountPtr Bank::writeAcc (AccountPtr acc, bool isNew) {
           // 2. Move put position to read minus length of balance
           // 3. Write new balance
           str.erase(0,pos+1); // remove accnum
-          str.erase(0,acc->getName().length()+1); // remove name
-          int offset = int(_data.tellg()) - str.length() - 1;
+          str.erase(0,str.find(",")+1); // remove name
+          int offset = int(_data.tellg()) - 8; // len(balance+"\n")
           _data.seekp(offset);
-          _data << acc->getBalance() << std::endl;
+          _data << padBalance(acc->getBalance()) << std::endl;
           _data.close();
           break;
         } /* inner if */
@@ -172,12 +187,12 @@ struct Txn Bank::writeTxn (struct Txn txn) {
   if(_txn) {
     _txn << txn.N;
     _txn << ": ";
-    _txn << txn.From->getAccountNumber();
+    _txn << padAccNum(txn.From->getAccountNumber());
     _txn << " -> ";
-    _txn << txn.To->getAccountNumber();
-    _txn << "; $";
-    _txn << txn.Amt;
-    _txn << std::endl;
+    _txn << padAccNum(txn.To->getAccountNumber());
+    _txn << "; ";
+    _txn << padBalance(txn.Amt);
+    _txn << "$" << std::endl;
   } else std::cout << "Transaction not written to file. Please try again\n";
   _txn.close();
   return txn;
