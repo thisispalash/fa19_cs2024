@@ -35,8 +35,8 @@ Bank::Bank() {
     // Get last transaction number
   _txn.open("_txn.dat",std::ios::in|std::ios::out|std::ios::app);
   if(_txn) {
-    _txn.seekg(0); // Make efficient by going to last line directly
-    std::string str; while(getline(_txn,str)); // Jump to last line
+    _txn.seekg(int(_txn.tellg())-57);
+    std::string str; getline(_txn,str);
     int pos = str.find(":");
     std::string num_str = (pos!=std::string::npos)? str.substr(0,pos):"0 ";
     _txn_num = stoi(num_str);
@@ -143,6 +143,12 @@ std::string Bank::padBalance(int bal, int len) {
   ret += std::to_string(bal);
   return ret;
 }
+std::string Bank::padTxnNum(int num, int len) {
+  std::string ret = "";
+  for(int i=len; i>std::to_string(num).length(); i--) ret += "0";
+  ret += std::to_string(num);
+  return ret;
+}
 
 AccountPtr Bank::writeAcc (AccountPtr acc, bool isNew) {
   if (isNew) {
@@ -185,7 +191,7 @@ AccountPtr Bank::writeAcc (AccountPtr acc, bool isNew) {
 struct Txn Bank::writeTxn (struct Txn txn) {
   _txn.open(_txn_file,std::ios::app);
   if(_txn) {
-    _txn << txn.N;
+    _txn << padTxnNum(txn.N);
     _txn << ": ";
     _txn << padAccNum(txn.From->getAccountNumber());
     _txn << " -> ";

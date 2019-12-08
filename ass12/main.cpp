@@ -27,23 +27,29 @@ int main(int argc, char* argv[]) {
   };
   Item *acc[] = { // Sub menu
     new Command("balance inquiry",'1',[&]() { 
+      if (!b.getCurrent()) { std::cout << "No account selected.\n"; return 0; }
       std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance());
       std::cout << std::endl;
       return 1; }),
     new Command("deposit funds",'2',[&]() { 
+      if (!b.getCurrent()) { std::cout << "No account selected.\n"; return 0; }
       std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance()) << "$";
       int new_bal = b.getCurrent()->deposit(getDepAmt(true));
       std::cout << "Updated Balance: " << std::to_string(new_bal) << "$" << std::endl;
       return 1; }),
     new Command("withdraw $$$",'3',[&]() {
+      if (!b.getCurrent()) { std::cout << "No account selected.\n"; return 0; }
       std::cout << "Account Balance: " << std::to_string(b.getCurrent()->getBalance()) << "$";
       int res = b.getCurrent()->withdraw(getDepAmt(false));
       std::cout << ((res!=-1)? "Updated Balance: "+std::to_string(res)+"$" : "insufficient funds");
       std::cout << std::endl; return 1; }),
     new Command("transfer $$$",'4',[&]() {
+      if (!b.getCurrent()) { std::cout << "No account selected.\n"; return 0; }
       b.lstAcc(); std::cout << "Account number to transfer to: ";
-      int to; std::cin >> to;
-      std::cout << "Amount to transfer: ";
+      int to; do { std::cin >> to;
+        if (!b.getAcc(to)) std::cout << "Invalid account number. Please try again: ";
+        else break;
+      } while(1); std::cout << "Amount to transfer: ";
       int amt; std::cin >> amt;
       struct Txn txn = b.transaction_do(b.getCurrent(),b.getAcc(to),amt);
       std::cout << "Updated Balance: " << std::to_string(b.getCurrent()->getBalance()) << "$"; 
