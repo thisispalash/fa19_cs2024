@@ -5,7 +5,10 @@
  *
  */
 
-// To run: $ clang -lstdc++ -o ass03 ass03.cpp menu.cpp
+/*
+ $ To run: $ clang -lstdc++ -o ass03.out ass03.cpp menu.cpp
+ $ ./ass03.out
+ */
 
 
 #include <iostream>

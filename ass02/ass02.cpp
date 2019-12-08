@@ -5,6 +5,11 @@
  *
  */
 
+/*
+ $ To run: $ clang -lstdc++ -o ass02.out ass02.cpp
+ $ ./ass02.out
+ */
+
 #include <iostream>
 
 using namespace std;

@@ -6,8 +6,8 @@
  */
 
 /* To run
- $ clang -lstdc++ -o ass06 MenuItem.cpp Menu.cpp main.cpp
- $ ./ass06
+ $ clang -lstdc++ -o ass06.out MenuItem.cpp Menu.cpp main.cpp
+ $ ./ass06.out
  */
 
 

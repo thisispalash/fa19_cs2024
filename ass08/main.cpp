@@ -6,8 +6,8 @@
  */
 
 /* To run
- $ clang -lstdc++ -o ass08 MenuCommand.cpp Menu.cpp main.cpp
- $ ./ass08
+ $ clang -lstdc++ -o ass08.out MenuCommand.cpp Menu.cpp main.cpp
+ $ ./ass08.out
  */
 
 #include "MenuH.h"

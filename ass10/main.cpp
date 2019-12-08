@@ -6,8 +6,8 @@
  */
 
 /* To run
- $ clang -lstdc++ -std=c++11 -o ass10 MenuCommand.cpp Menu.cpp BankAccount.cpp Bank.cpp main.cpp
- $ ./ass10
+ $ clang -lstdc++ -std=c++11 -o ass10.out MenuCommand.cpp Menu.cpp BankAccount.cpp Bank.cpp main.cpp
+ $ ./ass10.out
  */
 
 #include "MenuCommandH.h"

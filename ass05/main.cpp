@@ -6,8 +6,8 @@
  */
 
  /* To run: 
-  $ clang -lstdc++ -o ass05 Menu.cpp BankAccount.cpp Bank.cpp main.cpp
-  $ ./ass05
+  $ clang -lstdc++ -o ass05.out Menu.cpp BankAccount.cpp Bank.cpp main.cpp
+  $ ./ass05.out
   */
 
 #include "MenuH.h"
