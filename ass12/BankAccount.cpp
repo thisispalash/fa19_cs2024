@@ -1,46 +1,45 @@
 /*  
- *  CS 2024 ass10
+ *  CS 2024 ass12
  *  Author: Palash A. [pa334]
- *  Date: Nov 10, 2019
+ *  Date: Dec 8, 2019
  *
  */
 
 #include "BankAccountH.h"
 
 Account::Account() {
-  this->balance = 0;
-  this->accnum = -1;
-  this->name = "default";
+  _balance = 0;
+  _accnum = -1;
+  _name = "default";
 }
 Account::Account(int b, int n, std::string na) {
-  this->balance = b;
-  this->accnum = n;
-  this->name = na;
+  _balance = b;
+  _accnum = n;
+  _name = na;
 }
 
-int Account::getBalance() { return this->balance; } // Can i haz cheezburgr?
+int Account::getBalance() { return _balance; } // Can i haz cheezburgr?
 int Account::setBalance(int b) {
-  this->balance = b;
-  return this->getBalance();
+  _balance = b;
+  return getBalance();
 }
-int Account::getAccountNumber() { return this->accnum; }
+int Account::getAccountNumber() { return _accnum; }
 int Account::setAccountNumber(int n) {
-  this->accnum = n;
-  return this->getAccountNumber();
+  _accnum = n;
+  return getAccountNumber();
 }
-std::string Account::getName() { return this->name; }
+std::string Account::getName() { return _name; }
 std::string Account::setName(std::string na) {
-  this->name = na;
-  return this->getName();
+  _name = na;
+  return getName();
 }
 
 int Account::deposit(int x) {
-  this->balance += x;
-  return this->getBalance();
+  _balance += x;
+  return getBalance();
 }
 int Account::withdraw(int x) {
-  if(x>this->balance || x<=0)
-    return -1;
-  this->balance -= x;
-  return this->getBalance();
+  if(x>_balance || x<=0) return -1;
+  _balance -= x;
+  return getBalance();
 }

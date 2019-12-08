@@ -1,21 +1,24 @@
 /*  
- *  CS 2024 ass10
+ *  CS 2024 ass12
  *  Author: Palash A. [pa334]
- *  Date: Nov 10, 2019
+ *  Date: Dec 8, 2019
  *
  */
 
-#ifndef MENUITEM_H
-#define MENUITEM_H
-#include "MenuItemH.h"
 #include <functional>
-#endif
+
+#include "MenuItemH.h"
+
+#ifndef MENU_COMMAND
+#define MENU_COMMAND
 
 class Command: public Item {
-  private: std::function<bool()> fun_ptr;
+  private: std::function<bool()> _fun_ptr;
   public: 
     Command(std::string, char, const std::function<bool()>&);
     bool execute();
     bool select();
     void display();
 };
+
+#endif /* MENU_COMMAND */

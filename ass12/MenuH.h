@@ -1,19 +1,22 @@
 /*  
- *  CS 2024 ass10
+ *  CS 2024 ass12
  *  Author: Palash A. [pa334]
- *  Date: Nov 10, 2019
+ *  Date: Dec 8, 2019
  *
  */
 
-#ifndef MENUITEM_H
-#define MENUITEM_H
-  #include "MenuItemH.h"
-#endif
+#include <vector>
+
+#include "MenuItemH.h"
+#ifndef MENU_H
+#define MENU_H
 
 class Menu: public Item {
-  private: std::vector<Item *> items;
+  private: std::vector<Item *> _items;
   public: 
     Menu(Item* [], int, std::string, char);
     bool select();
     void display();
 };
+
+#endif /* MENU_H */

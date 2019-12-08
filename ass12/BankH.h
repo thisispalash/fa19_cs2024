@@ -1,43 +1,53 @@
 /*  
- *  CS 2024 ass11
+ *  CS 2024 ass12
  *  Author: Palash A. [pa334]
- *  Date: Nov 26, 2019
+ *  Date: Dec 8, 2019
  *
  */
  
-
-// Add header guards
-
-#include "BankAccountH.h"
-#include <map>
-#include <iterator>
+#include <iostream>
 #include <fstream>
+#include <iterator>
+#include <map>
   
+#include "BankAccountH.h"
+
+#ifndef STRUCT_TXN
+#define STRUCT_TXN
+
 struct Txn {
   int N, Amt=0;
-  Account* From = NULL;
-  Account* To = NULL;
+  AccountPtr From = nullptr;
+  AccountPtr To = nullptr;
 };
+
+#endif /* STRUCT_TXN */
+
+#ifndef BANK
+#define BANK
 
 class Bank {
   private:
     int _txn_num;
-    Account *_curr;
-    map<int, Account*> _acc;
-    fstream _data, _txn;
+    std::map<int, AccountPtr> _acc;
+    std::weak_ptr<Account> _curr;
+    std::string _data_file, _txn_file;
+    std::fstream _data, _txn;
   public:
     Bank();
-    ~Bank();
+    ~Bank() { _acc.clear(); }
 
     void newAcc();
     void lstAcc();
-    void accDet(Account*);
-    Account* getCurrent() { return _curr; }
-    Account* setCurrent(int);
-    Txn transaction_do(Account*,Account*,int);
+    void accDet(); // Prints the current accounts details
+    void setCurrent(int);
+    AccountPtr getAcc(int);
+    AccountPtr getCurrent() { return _curr.lock(); }
     
-    Account* getAcc(int);
-    Account* writeAcc(Account*);
-    struct Txn readTxn(int);
+    Txn transaction_do(AccountPtr,AccountPtr,int);
+
+    AccountPtr writeAcc(AccountPtr,bool isNew = false);
     struct Txn writeTxn(struct Txn);
 };
+
+#endif /* BANK */

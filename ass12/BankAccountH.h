@@ -1,29 +1,36 @@
 /*  
- *  CS 2024 ass11
+ *  CS 2024 ass12
  *  Author: Palash A. [pa334]
- *  Date: Nov 25, 2019
+ *  Date: Dec 8, 2019
  *
  */
 
 #include <iostream>
 #include <string>
-using namespace std;
+
+#ifndef BANK_ACCOUNT
+#define BANK_ACCOUNT
 
 class Account {
   private: 
-    int accnum, balance;
-    string name;
+    int _accnum, _balance;
+    std::string _name;
   public:
     Account();
-    Account(int,int,string);
+    Account(int,int,std::string);
+    ~Account() { std::cout << "Deleting account of " << _name << "..\n"; }
 
     int getBalance();
     int setBalance(int);
     int getAccountNumber();
     int setAccountNumber(int);
-    string getName();
-    string setName(string);
+    std::string getName();
+    std::string setName(std::string);
 
     int deposit(int);
     int withdraw(int);
 };
+
+typedef std::shared_ptr<Account> AccountPtr;
+
+#endif /* BANK_ACCOUNT */

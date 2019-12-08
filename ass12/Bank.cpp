@@ -1,206 +1,184 @@
 /*  
- *  CS 2024 ass11
+ *  CS 2024 ass12
  *  Author: Palash A. [pa334]
- *  Date: Nov 28, 2019
+ *  Date: Dec 8, 2019
  *
  */
 
 #include "BankH.h"
 
 /* 
- * Constructor and Destructor 
+ * Constructor(s) 
  */
 
 Bank::Bank() {
-  this->_data.open("_acc.dat",ios::in|ios::out|ios::app);
-  // Load the map of accounts from file
-  if(this->_data) { 
-    this->_data.seekp(0);
-    string str, delim = ",";
-    while(getline(this->_data,str)) {
-      if(str.find(delim) == string::npos) break;
+  _data_file = "_acc.dat"; _txn_file = "_txn.dat"; // Allow custom names?
+  _curr = AccountPtr(nullptr);
+
+    // Load the map of accounts from file
+  _data.open(_data_file,std::ios::in|std::ios::out|std::ios::app);
+  if(_data) { 
+    _data.seekg(0); // Read from beginning of file
+    std::string str, delim = ","; // csv format
+    while(getline(_data,str)) {
+      if(str.find(delim) == std::string::npos) break; // Empty line
       int pos = str.find(delim);
       int num = stoi(str.substr(0,pos));
-      str.erase(0, (pos + delim.length()));
+      str.erase(0, (pos + delim.length())); // Delete accNum
       pos = str.find(delim);
-      string name = str.substr(0,pos);
-      str.erase(0, (pos + delim.length()));
-      pos = str.find(delim);
-      int bal = stof(str.substr(0,pos)); // TODO Make float
-      this->_acc[num] = new Account(bal,num,name); // add to runtime map
+      std::string name = str.substr(0,pos);
+      str.erase(0, (pos + delim.length())); // Delete name
+      _acc[num] = AccountPtr(new Account(stoi(str),num,name)); // add to runtime map
     }
   } _data.close();
-  this->_txn.open("_txn.dat",ios::in|ios::out|ios::app);
-  // Get last transaction number
-  if(this->_txn) {
-    this->_txn.seekp(0); // Make efficient by going to last line only
-    string str; while(getline(this->_txn,str)); // Jump to last line
+
+    // Get last transaction number
+  _txn.open("_txn.dat",std::ios::in|std::ios::out|std::ios::app);
+  if(_txn) {
+    _txn.seekg(0); // Make efficient by going to last line directly
+    std::string str; while(getline(_txn,str)); // Jump to last line
     int pos = str.find(":");
-    string num_str = (pos!=string::npos)? str.substr(0,pos):"0";
-    this->_txn_num = stoi(num_str);
-    cout << "Transactions done: " << this->_txn_num << endl;
+    std::string num_str = (pos!=std::string::npos)? str.substr(0,pos):"0 ";
+    _txn_num = stoi(num_str);
+    std::cout << "Transactions done: " << _txn_num << std::endl;
   } _txn.close();
-  this->_curr = NULL;
 }
-
-Bank::~Bank() {
-  delete this->_curr;
-  this->_acc.clear();
-  this->_data.close();
-  this->_txn.close();
-}
-
 
 /* 
  * Account ops 
  */
 
 void Bank::newAcc() {
-  cout << "Enter Account Name: ";
-  string name; cin >> name;
+  std::cout << "Enter Account Name: ";
+  std::string name; std::cin >> name; // Can this be done in one statement?
   int num; do {
-    cout << "Enter Account Number: ";
-    cin >> num;
-    if(this->_acc.count(num) != 0) cout << "Account Number exists; try again\n";
+    std::cout << "Enter Account Number: ";
+    std::cin >> num;
+    if(_acc.count(num)>0) std::cout << "Account Number exists; try again\n";
     else break; // break only on unique number
   } while(1);
-  cout << "Enter Opening Balance: ";
-  int bal; cin >> bal;
-  this->_curr = new Account(bal,num,name); // Select new account
-  this->_acc[num] = this->_curr; // Add to existing map
-  this->writeAcc(this->_curr); // Write to file
-  cout << "Created new account for " << name << endl;
+  std::cout << "Enter Opening Balance: "; // LOL set to default maybe?
+  int bal; std::cin >> bal;
+  _acc[num] = AccountPtr(new Account(bal,num,name)); // Add to existing map
+  writeAcc(_acc[num],1); // Write to file
+  std::cout << "Created new account for " << name << std::endl;
 }
 
 void Bank::lstAcc() {
-  int size = this->_acc.size();
-  cout << "Number of accounts: " << size << endl;
+  int size = _acc.size();
+  std::cout << "Number of accounts: " << size << std::endl;
   if(size==0) { return; }
-  cout << "AccNum\t:\tName\t:\tBalance" << endl;
-  map<int,Account*>::iterator itr; // Iterator for map of accounts
-  for(itr=this->_acc.begin(); itr!=this->_acc.end(); ++itr ) {
-    cout << itr->first;
-    cout << "\t:\t";
-    cout << itr->second->getName();
-    cout << "\t:\t";
-    cout << itr->second->getBalance();
-    cout << endl;
+  std::cout << "AccNum\t:\tName\t:\tBalance" << std::endl;
+  std::map<int,AccountPtr>::iterator itr; // Iterator for map of accounts
+  int curr_acc = (_curr.lock())? _curr.lock()->getAccountNumber():-1;
+  std::for_each(_acc.begin(),_acc.end(),[curr_acc](std::pair<int,AccountPtr> elem) {
+    std::cout << elem.first;
+    std::cout << "\t:\t";
+    std::cout << elem.second->getName();
+    std::cout << "\t:\t";
+    if(elem.first == curr_acc) std::cout << elem.second->getBalance();
+    else std::cout << "XXX"; // Privacy
+    std::cout << std::endl;
+  });
+
+
+  for(itr=_acc.begin(); itr!=_acc.end(); ++itr ) {
   }
 }
 
-void Bank::accDet(Account* acc) {
-  if(acc == NULL) { // check for selected account
-    cout << "No account selected." << endl;
+void Bank::accDet() {
+  if(_curr.lock() == nullptr) { // check for selected account
+    std::cout << "No account selected." << std::endl;
     return;
-  }
-  cout << "Selected Account Details:" << endl;
-  cout << "Account Number:\t" << acc->getAccountNumber() << endl;
-  cout << "Account Name:\t" << acc->getName() << endl;
-  cout << "Account Bal.:\t" << acc->getBalance() << endl;
+  } AccountPtr acc(_curr);
+  std::cout << "Selected Account Details:" << std::endl;
+  std::cout << "Account Number:\t" << acc->getAccountNumber() << std::endl;
+  std::cout << "Account Name:\t" << acc->getName() << std::endl;
+  std::cout << "Account Bal.:\t" << acc->getBalance() << std::endl;
 }
 
-Account* Bank::setCurrent(int num) {
-  if(this->_acc.count(num)!=0) this->_curr = this->_acc.find(num)->second;
-  else cout << "Account number not found. Please try again. Current account not changed." << endl;
-  return this->_curr; // returns previous if key not found
+void Bank::setCurrent(int num) {
+  if(_acc.count(num)>0) _curr = _acc.find(num)->second;
+  else std::cout << "Account number not found. Please try again. Current account not changed.\n";
 }
 
-struct Txn Bank::transaction_do(Account* from, Account* to, int amt) {
+struct Txn Bank::transaction_do(AccountPtr from, AccountPtr to, int amt) {
   if(from->getBalance() < amt) {
-    cout << "Insufficient balance. Aborting transaction." << endl;
+    std::cout << "Insufficient balance. Aborting transaction." << std::endl;
     return {};
   }
-  from->withdraw(amt);
-  this->writeAcc(from);
-  to->deposit(amt);
-  this->writeAcc(to);
+  from->withdraw(amt); writeAcc(from);
+  to->deposit(amt); writeAcc(to);
   struct Txn txn;
-  txn.N = ++this->_txn_num;
+  txn.N = ++_txn_num;
   txn.From = from;
   txn.To = to;
   txn.Amt = amt;
-  this->writeTxn(txn);
-  cout << "Sent $" << amt;
+  writeTxn(txn); 
+  std::cout << "Txn Number: "<<txn.N << "; Sent $" << amt << std::endl;
   return txn;
+}
+
+AccountPtr Bank::getAcc(int num) {
+  if (_acc.count(num)>0) return _acc.find(num)->second;
+  return nullptr;
 }
 
 
 /* 
- * File Ops : Not writing to file!!
+ * File Ops
  */
 
-Account* Bank::getAcc(int num) {
-  return this->_acc.find(num)->second; // Add check for no account
-}
-
-Account* Bank::writeAcc (Account* acc) {
-  this->_data.open("_acc.dat",ios::in|ios::out);
-  this->_data.seekg(0); 
-  int num = acc->getAccountNumber(), pos = 0;
-  string str; while(getline(this->_data,str)) {
-    pos = str.find(",");
-    int i = stoi(str.substr(0,pos));
-    if(i == num) {
-      // 1. Delete string until only balance remains
-      // 2. Move put position to read minus length of balance
-      // 3. Write new balance
-      str.erase(0,pos+1); // remove accnum
-      str.erase(0,acc->getName().length()+1); // remove name
-      int offset = int(this->_data.tellg()) - str.length() - 1;
-      this->_data.seekp(offset);
-      this->_data << acc->getBalance() << endl;
-      this->_data.close();
-      return acc;
-    }
-  } this->_data.close();
-  // Account was not found and we have reached EOF
-  this->_data.open("_acc.dat",ios::app); // TODO why close and reopen
-  if(this->_data) {
-    this->_data << acc->getAccountNumber();
-    this->_data << ",";
-    this->_data << acc->getName();
-    this->_data << ",";
-    this->_data << acc->getBalance();
-    this->_data << endl;
-  } else cout << "Not write to file :(\n";
-  this->_data.close();
+AccountPtr Bank::writeAcc (AccountPtr acc, bool isNew) {
+  if (isNew) {
+     _data.open(_data_file,std::ios::app);
+    if(_data) {
+      _data << acc->getAccountNumber();
+      _data << ",";
+      _data << acc->getName();
+      _data << ",";
+      _data << acc->getBalance();
+      _data << std::endl;
+    } else std::cout << "Could not add account to file. Please exit and try again.\n";
+    _data.close();
+  } else { // Error: variable lengths causing random newlines
+    int num = acc->getAccountNumber(), pos = 0;
+    _data.open(_data_file,std::ios::in|std::ios::out);
+    if(_data) {
+      std::string str; while(getline(_data,str)) {
+        pos = str.find(",");
+        int i = stoi(str.substr(0,pos));
+        if(i == num) {
+          // 1. Delete string until only balance remains
+          // 2. Move put position to read minus length of balance
+          // 3. Write new balance
+          str.erase(0,pos+1); // remove accnum
+          str.erase(0,acc->getName().length()+1); // remove name
+          int offset = int(_data.tellg()) - str.length() - 1;
+          _data.seekp(offset);
+          _data << acc->getBalance() << std::endl;
+          _data.close();
+          break;
+        } /* inner if */
+      } /* while loop */
+    } else std::cout << "Balance not updated. Please try again." << std::endl;
+  }
+  _data.close();
   return acc;
 }
 
-struct Txn Bank::readTxn (int num) {
-  _txn.seekg(0); int pos = 0;
-  string str; while(getline(this->_txn,str)) {
-    pos = str.find(":");
-    if (pos == string::npos) return {}; // txn_num not found
-    int i = stoi(str.substr(0,pos));
-    if(i == num) {
-      str.erase(0,pos+2); // +2 because ": ".length() = 2
-      break;
-    }
-  }
-  struct Txn txn; txn.N = num;
-  pos = str.find(" -> ");
-  txn.From = this->_acc.find(stoi(str.substr(0,pos)))->second;
-  str.erase(0,pos+4); // +4 because " -> ".length() = 4
-  pos = str.find("; $");
-  txn.To = this->_acc.find(stoi(str.substr(0,pos)))->second;
-  str.erase(0,pos+3); // +3 because "; $".length() = 3
-  txn.Amt = stoi(str);
-  return txn;
-}
-
 struct Txn Bank::writeTxn (struct Txn txn) {
-  this->_txn.open("_txn.dat",ios::app);
-  if(this->_txn) {
-    this->_txn << txn.N;
-    this->_txn << ": ";
-    this->_txn << txn.From->getAccountNumber();
-    this->_txn << " -> ";
-    this->_txn << txn.To->getAccountNumber();
-    this->_txn << "; $";
-    this->_txn << txn.Amt;
-    this->_txn << endl;
-  } else cout << "Not write\n";
-  this->_txn.close();
+  _txn.open(_txn_file,std::ios::app);
+  if(_txn) {
+    _txn << txn.N;
+    _txn << ": ";
+    _txn << txn.From->getAccountNumber();
+    _txn << " -> ";
+    _txn << txn.To->getAccountNumber();
+    _txn << "; $";
+    _txn << txn.Amt;
+    _txn << std::endl;
+  } else std::cout << "Transaction not written to file. Please try again\n";
+  _txn.close();
   return txn;
 }
