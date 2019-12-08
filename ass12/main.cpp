@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
       b.lstAcc(); std::cout << "Account number to transfer to: ";
       int to; do { std::cin >> to;
         if (!b.getAcc(to)) std::cout << "Invalid account number. Please try again: ";
+        else if(to == b.getCurrent()->getBalance()) std::cout << "You cannot send money to yourself! Try again: "
         else break;
       } while(1); std::cout << "Amount to transfer: ";
       int amt; std::cin >> amt;
